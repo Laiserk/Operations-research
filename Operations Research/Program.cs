@@ -13,7 +13,7 @@ namespace Operations_Research
     {
         static public Frac[] dotProduct(Frac[] f1, Frac[] f2)
         {
-            
+              
         }
 
         static public Frac[] oneJordan(Frac[] matrix)
