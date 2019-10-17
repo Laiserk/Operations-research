@@ -11,12 +11,12 @@ namespace Operations_Research
 
     class Jordan
     {
-        static public Frac[] oneJordan(Frac[] matrix)
+        static public Frac[][] oneJordan(Frac[] matrix, int i, int j)
         {
 
         }
 
-        static public Frac[] fullJordan(Frac[] matrix)
+        static public Frac[][] fullJordan(Frac[] matrix)
         {
 
         }
