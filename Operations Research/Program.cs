@@ -11,7 +11,7 @@ namespace Operations_Research
 
     class Operations
     {
-        static public Frac[] dotProduct(Frac[] f1, Frac[] f2)
+        static public Frac dotProduct(Frac[] f1, Frac[] f2)
         {
             
         }
