@@ -26,7 +26,7 @@ namespace Operations_Research
     {
         static public Frac dotProduct(Frac[] f1, Frac[] f2)
         {
-            Frac result = new Frac;
+            Frac result = new Frac();
             try
             {
                 for (int i = 0; i < f1.Length; i++)
@@ -35,7 +35,7 @@ namespace Operations_Research
                 }
                 return result;
             }
-            catch (Exception e)
+            catch (IndexOutOfRangeException e)
             {
                 if (f1.Length != f2.Length)
                 {
@@ -45,12 +45,35 @@ namespace Operations_Research
             }
         }
 
-        static public Frac[] oneSimplex(Frac[] matrix, Frac[] target)
+        private int[] obtainBasisIdx(Frac[][] matrix)
+        {
+            int[] basis = new int[matrix.Length];
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                for (int j = 0; j < matrix[i].Length; j++)
+                {
+                    if(matrix[i][j] == 1)
+                    {
+                        int k = 0;
+                        while ((k < matrix.Length && matrix[k][j] == 0) || k == i)
+                        {
+                            k++;    
+                        } 
+
+                        if (k == matrix.Length)
+                            basis[i] = j;
+                    }
+                }
+            }
+            return basis;
+        }
+
+        static public Frac[][] oneSimplex(Frac[][] matrix, Frac[] target)
         {
 
         }
 
-        static public Frac[] fullSimplex(Frac[] matrix, Frac[] target)
+        static public frac[] fullsimplex(frac[][] matrix, frac[] target)
         {
 
         }
