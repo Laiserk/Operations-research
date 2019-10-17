@@ -9,16 +9,8 @@ namespace Operations_Research
 
     }
 
-    class Operations
+    class Jordan
     {
-<<<<<<< HEAD
-        static public Frac dotProduct(Frac[] f1, Frac[] f2)
-        {
-            
-        }
-
-=======
->>>>>>> OxidBranch
         static public Frac[] oneJordan(Frac[] matrix)
         {
 
@@ -28,7 +20,10 @@ namespace Operations_Research
         {
 
         }
+    }
 
+    class Simplex
+    {
         static public Frac dotProduct(Frac[] f1, Frac[] f2)
         {
             Frac result = new Frac;
@@ -40,14 +35,14 @@ namespace Operations_Research
                 }
                 return result;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (f1.Length != f2.Length)
                 {
                     Console.WriteLine("Dot product of the vectors with different lengths!");
                     throw;
-                }  
-            }      
+                }
+            }
         }
 
         static public Frac[] oneSimplex(Frac[] matrix, Frac[] target)
@@ -59,7 +54,6 @@ namespace Operations_Research
         {
 
         }
-
     }
 
     class Utils
