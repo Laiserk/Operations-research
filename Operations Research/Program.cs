@@ -6,14 +6,109 @@ namespace Operations_Research
 {
     class Frac
     {
+        public double numerator;
+        public double denominator;
 
+        public Frac(double numerator, double denominator)
+        {
+            this.numerator = numerator;
+            this.denominator = denominator;
+        }
+        public Frac() { }
+
+        public static Frac operator *(Frac f1, Frac f2)
+        {
+            Frac f3 = new Frac(0, 0);
+            f3.numerator = f1.numerator * f2.numerator;
+            f3.denominator = f1.denominator * f2.denominator;
+            return f3;
+        }
+        public static Frac operator /(Frac f1, Frac f2)
+        {
+            Frac f3 = new Frac(0, 0);
+            f3.numerator = f1.numerator * f2.denominator;
+            f3.denominator = f1.denominator * f2.numerator;
+            return f3;
+        }
+        public static Frac operator +(Frac f1, Frac f2)
+        {
+            Frac f3 = new Frac(0, 0);
+            f3.denominator = f1.denominator * f2.denominator;
+            f3.numerator = (f1.numerator * f2.denominator) + (f2.numerator * f1.denominator);
+            return f3;
+        }
+        public static Frac operator -(Frac f1, Frac f2)
+        {
+            Frac f3 = new Frac(0, 0);
+            f3.denominator = f1.denominator * f2.denominator;
+            f3.numerator = (f1.numerator * f2.denominator) - (f2.numerator * f1.denominator);
+            return f3;
+        }
+        public static bool operator >(Frac f1, Frac f2)
+        {
+            return (f1.numerator / f1.denominator) > (f2.numerator / f2.denominator);
+        }
+        public static bool operator <(Frac f1, Frac f2)
+        {
+            return (f1.numerator / f1.denominator) < (f2.numerator / f2.denominator);
+        }
+        public static bool operator >(Frac f1, int number)
+        {
+            return (f1.numerator / f1.denominator) > number;
+        }
+        public static bool operator <(Frac f1, int number)
+        {
+            return (f1.numerator / f1.denominator) < number;
+        }
+        public static bool operator ==(Frac f1, int number)
+        {
+            return (f1.numerator / f1.denominator) == number;
+        }
+        public static bool operator !=(Frac f1, int number)
+        {
+            return (f1.numerator / f1.denominator) != number;
+        }
     }
 
     class Jordan
     {
-        static public Frac[][] oneJordan(Frac[] matrix, int i, int j)
+        static public Frac[,] oneJordan(Frac[,] matrix, int i, int j)
         {
+            Frac f = new Frac(0, 1);
+            Frac[,] tmpMatrix = new Frac[matrix.GetLength(0), matrix.GetLength(1)]; 
+            for (int k = 0; k < tmpMatrix.GetLength(0); k++)
+            {
+                matrix[i, k] /= matrix[i, j];
+                tmpMatrix[i,k] = matrix[i, k];
+            }
+            for (int k = 0; k < tmpMatrix.GetLength(1); k++)
+            {
+                if (k != i)
+                {
+                    tmpMatrix[k, j] = f;
+                }     
+            }
+            for (int k = 0; k < tmpMatrix.GetLength(0); k++)
+            {
+                if (tmpMatrix[i, k] == 0)
+                {
+                    for(int t = 0; t < tmpMatrix.GetLength(1); t++)
+                        if(t!=k)
+                        {
+                            tmpMatrix[t,k] = matrix[t,k];
+                        }
+                }
+            }
+            //Вот тут вот вопрос блять...
+            //for (int g = 0; g < i; g++)
+            //{
+            //    for (int k = 0; k < ; k++)
+            //    {
 
+            //    }
+            //}
+
+            return tmpMatrix;
         }
 
         static public Frac[][] fullJordan(Frac[] matrix)
@@ -159,33 +254,35 @@ namespace Operations_Research
         {
             return SimplexForJordan(matrix, computeSolution(matrix, target));
         }
-
+        /*
         static public Frac[] fullsimplex(frac[][] matrix, frac[] target)
         {
 
         }
+        */
     }
 }
 
-    class Utils
+class Utils
+{
+    // [][]
+    /*
+    static void PrintMatrix(Frac[] matrix)
     {
-        // [][]
-        static void PrintMatrix(Frac[] matrix)
-        {
 
-        }
-
-        static void PrintSimplexTable(Frac[][] matrix, Frac[] target)
-        {
-
-        }
     }
 
-    class Program
+    static void PrintSimplexTable(Frac[][] matrix, Frac[] target)
     {
-        static void Main(string[] args)
-        {
 
-        }
+    }
+    */
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+
     }
 }
