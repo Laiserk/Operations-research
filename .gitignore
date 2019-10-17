@@ -209,3 +209,8 @@ project.lock.json
 *.feature.cs
 *.feature.xlsx.*
 *.Specs_*.html
+
+#
+
+*.ide-shm
+*.ide-wal
