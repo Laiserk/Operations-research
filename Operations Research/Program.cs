@@ -100,15 +100,17 @@ namespace Operations_Research
                 return result;
             return 0;
         }
-        public Frac[,] oneJordan(Frac[,] matrix, int i, int j)
+        public static Frac[,] oneJordan(Frac[,] matrix, int i, int j)
         { 
             Frac zero = new Frac(0);
             Frac[,] tmpMatrix = new Frac[matrix.GetLength(0), matrix.GetLength(1)];
-            for (int k = 0; k <= tmpMatrix.GetLength(0) + 1; k++)
+
+            for (int k = 0; k < tmpMatrix.GetLength(1); k++)
             {
                 matrix[i, k] /= matrix[i, j];
                 tmpMatrix[i, k] = matrix[i, k];
             }
+
             for (int k = 0; k < tmpMatrix.GetLength(0); k++)
             {
                 if (k != i)
@@ -116,6 +118,7 @@ namespace Operations_Research
                     tmpMatrix[k, j] = zero;
                 }
             }
+
             for (int g = 0; g < tmpMatrix.GetLength(0); g++)
             {
                 for (int k = 0; k < tmpMatrix.GetLength(1); k++)
@@ -132,7 +135,7 @@ namespace Operations_Research
             return tmpMatrix;
         }
 
-        //static public Frac[][] fullJordan(Frac[][] matrix)
+        //public static Frac[][] fullJordan(Frac[][] matrix)
         //{
         //    for (int i = 0; i < matrix.GetLength(0); i++)
         //    {
@@ -145,7 +148,7 @@ namespace Operations_Research
 
     class SimplexMethod
     {
-        //static public Frac dotProduct(Frac[] f1, Frac[] f2)
+        //public static Frac dotProduct(Frac[] f1, Frac[] f2)
         //{
         //    Frac result = new Frac();
         //    try
@@ -245,12 +248,12 @@ namespace Operations_Research
             return result;
         }
 
-        static public Frac[][] firstStepSimplex(Frac[][] matrix, Frac[] target)
+        public static Frac[][] firstStepSimplex(Frac[][] matrix, Frac[] target)
         {
             return SimplexForJordan(matrix, computeSolution(matrix, target));
         }
         /*
-        static public Frac[] fullsimplex(frac[][] matrix, frac[] target)
+        public static Frac[] fullsimplex(frac[][] matrix, frac[] target)
         {
 
         }
@@ -325,16 +328,30 @@ namespace Operations_Research
         {
             Jordan j = new Jordan();
 
+            //Frac[,] matrix = new Frac[,]
+            //{
+            //    {new Frac(4),  new Frac(1), new Frac(1),  new Frac(0),new Frac(1),  new Frac(6)},
+            //    {new Frac(-1), new Frac(3), new Frac(-1), new Frac(0),new Frac(3),  new Frac(1)},
+            //    {new Frac(8),  new Frac(4), new Frac(12), new Frac(4),new Frac(12), new Frac(24)}
+            //};
+
             Frac[,] matrix = new Frac[,]
             {
-                {new Frac(2), new Frac(-1), new Frac(1), new Frac(-3),new Frac(5)},
-                {new Frac(1), new Frac(1), new Frac(0), new Frac(-1),new Frac(2)},
-                {new Frac(1), new Frac(4), new Frac(-1), new Frac(0),new Frac(2)}
+                {new Frac(1), new Frac(3), new Frac(2),  new Frac(1),  new Frac(16)},
+                {new Frac(2), new Frac(3),  new Frac(1), new Frac(-1),  new Frac(14)}
             };
-            Utils.PrintMatrix(matrix);
-            Console.WriteLine("\n" + Jordan.findElem(matrix, 0));
-            Console.ReadKey();
 
+            Utils.PrintMatrix(matrix);
+
+            matrix = Jordan.oneJordan(matrix, 0, 0);
+            Console.Write("\n");
+            Utils.PrintMatrix(matrix);
+
+            matrix = Jordan.oneJordan(matrix, 1, 1);
+            Console.Write("\n");
+            Utils.PrintMatrix(matrix);
+
+            Console.ReadKey();
         }
     }
 }
