@@ -6,15 +6,15 @@ namespace Operations_Research
 {
     class Frac
     {
-        public double numerator;
-        public double denominator;
+        public int numerator;
+        public int denominator;
 
-        public Frac(double numerator, double denominator)
+        public Frac(int numerator, int denominator)
         {
             this.numerator = numerator;
             this.denominator = denominator;
         }
-        public Frac(double numerator) { this.numerator = numerator; denominator = 1; }
+        public Frac(int numerator) { this.numerator = numerator; denominator = 1; }
 
         public static Frac operator *(Frac f1, Frac f2)
         {
@@ -68,14 +68,47 @@ namespace Operations_Research
         {
             return (f1.numerator / f1.denominator) != number;
         }
+
+        public void simplify()
+        {
+            // 2/2 => 1
+            if (numerator == denominator)
+                numerator = denominator = 1;
+
+            //-2/-1 => 2/1
+            if (numerator < 0 && denominator < 0)
+            {
+                numerator = -numerator;
+                denominator = -denominator;
+            }
+            //2/-3 => -2/3
+            if (denominator < 0)
+            {
+                numerator = -numerator;
+                denominator = -denominator;
+            }
+
+            //simplification
+            for (int i = denominator; i > 1; i--)
+            {
+                if((numerator % i == 0) && (denominator % i == 0))
+                {
+                    numerator /= i;
+                    denominator /= i;
+                }
+            }
+        }
+
         public string toString()
         {
-            
-            if(this.denominator == 1)
+            simplify();
+            // 2/1 => 2
+            if (denominator == 1 || numerator == 0)
             {
-                return this.numerator.ToString();
+                return numerator.ToString();
             }
-            return this.numerator.ToString() + "/" + this.denominator.ToString();
+            
+            return numerator.ToString() + "/" + denominator.ToString();
         }
     }
 
@@ -102,37 +135,37 @@ namespace Operations_Research
         }
         public static Frac[,] oneJordan(Frac[,] matrix, int i, int j)
         { 
-            Frac zero = new Frac(0);
-            Frac[,] tmpMatrix = new Frac[matrix.GetLength(0), matrix.GetLength(1)];
+            Frac zeroFrac = new Frac(0);
+            Frac leadingElem = matrix[i, j];
+            Frac[,] resultMtx = new Frac[matrix.GetLength(0), matrix.GetLength(1)];
 
-            for (int k = 0; k < tmpMatrix.GetLength(1); k++)
+            for (int k = 0; k < resultMtx.GetLength(1); k++)
             {
-                matrix[i, k] /= matrix[i, j];
-                tmpMatrix[i, k] = matrix[i, k];
+                resultMtx[i, k] = matrix[i, k] / leadingElem;
             }
 
-            for (int k = 0; k < tmpMatrix.GetLength(0); k++)
+            for (int k = 0; k < resultMtx.GetLength(0); k++)
             {
                 if (k != i)
                 {
-                    tmpMatrix[k, j] = zero;
+                    resultMtx[k, j] = zeroFrac;
                 }
             }
 
-            for (int g = 0; g < tmpMatrix.GetLength(0); g++)
+            for (int g = 0; g < resultMtx.GetLength(0); g++)
             {
-                for (int k = 0; k < tmpMatrix.GetLength(1); k++)
+                for (int k = 0; k < resultMtx.GetLength(1); k++)
                 {
                     if (g == i || k == j)
                         continue;
                     else
                     {
-                        tmpMatrix[g, k] = matrix[i, j] * matrix[g, k] - matrix[i, k] * matrix[g, j];
+                        resultMtx[g, k] = (leadingElem * matrix[g, k] - matrix[i, k] * matrix[g, j])/leadingElem;
                     }
                 }
             }
 
-            return tmpMatrix;
+            return resultMtx;
         }
 
         //public static Frac[][] fullJordan(Frac[][] matrix)
@@ -326,31 +359,24 @@ namespace Operations_Research
     {
         static void Main(string[] args)
         {
-            Jordan j = new Jordan();
-
-            //Frac[,] matrix = new Frac[,]
-            //{
-            //    {new Frac(4),  new Frac(1), new Frac(1),  new Frac(0),new Frac(1),  new Frac(6)},
-            //    {new Frac(-1), new Frac(3), new Frac(-1), new Frac(0),new Frac(3),  new Frac(1)},
-            //    {new Frac(8),  new Frac(4), new Frac(12), new Frac(4),new Frac(12), new Frac(24)}
-            //};
-
             Frac[,] matrix = new Frac[,]
             {
-                {new Frac(1), new Frac(3), new Frac(2),  new Frac(1),  new Frac(16)},
-                {new Frac(2), new Frac(3),  new Frac(1), new Frac(-1),  new Frac(14)}
+                {new Frac(4), new Frac(1), new Frac(1),  new Frac(0),  new Frac(1),  new Frac(6)},
+                {new Frac(-1), new Frac(3),  new Frac(-1), new Frac(0),  new Frac(3),  new Frac(1)},
+                {new Frac(8), new Frac(4),  new Frac(12), new Frac(4),  new Frac(12),  new Frac(24)}
             };
 
             Utils.PrintMatrix(matrix);
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                int col;
+                Console.Write("col:");
+                col = int.Parse(Console.ReadLine());
 
-            matrix = Jordan.oneJordan(matrix, 0, 0);
-            Console.Write("\n");
-            Utils.PrintMatrix(matrix);
-
-            matrix = Jordan.oneJordan(matrix, 1, 1);
-            Console.Write("\n");
-            Utils.PrintMatrix(matrix);
-
+                matrix = Jordan.oneJordan(matrix, i, col);
+                Console.Write("\n");
+                Utils.PrintMatrix(matrix);
+            }
             Console.ReadKey();
         }
     }
