@@ -359,25 +359,31 @@ namespace Operations_Research
     {
         static void Main(string[] args)
         {
+
             Frac[,] matrix = new Frac[,]
             {
-                {new Frac(4), new Frac(1), new Frac(1),  new Frac(0),  new Frac(1),  new Frac(6)},
-                {new Frac(-1), new Frac(3),  new Frac(-1), new Frac(0),  new Frac(3),  new Frac(1)},
-                {new Frac(8), new Frac(4),  new Frac(12), new Frac(4),  new Frac(12),  new Frac(24)}
-            };
+                {new Frac(0), new Frac(0), new Frac(1),  new Frac(13,34),  new Frac(13,17), new Frac(1)},
+                {new Frac(0), new Frac(1), new Frac(0),   new Frac(3,34), new Frac(20,17), new Frac(1)},
+                {new Frac(1), new Frac(0), new Frac(0),  new Frac(-2,17), new Frac(-4,17), new Frac(1)}
+            };                                         
 
             Utils.PrintMatrix(matrix);
-            for (int i = 0; i < matrix.GetLength(0); i++)
+            while(true)
             {
-                int col;
+                int row, col;
+                Console.Write("row:");
+                row = int.Parse(Console.ReadLine());
                 Console.Write("col:");
                 col = int.Parse(Console.ReadLine());
-
-                matrix = Jordan.oneJordan(matrix, i, col);
+                if (row == -1 || col == -1)
+                {
+                    Console.ReadKey();
+                    return;
+                }
+                matrix = Jordan.oneJordan(matrix, row, col);
                 Console.Write("\n");
                 Utils.PrintMatrix(matrix);
             }
-            Console.ReadKey();
         }
     }
 }
