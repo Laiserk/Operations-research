@@ -9,6 +9,7 @@ namespace Operations_Research
         public int numerator;
         public int denominator;
 
+        public Frac() { numerator = 0; denominator = 1; } //zero initialization if empty
         public Frac(int numerator, int denominator)
         {
             this.numerator = numerator;
@@ -99,7 +100,7 @@ namespace Operations_Research
             }
         }
 
-        public string toString()
+        public override string ToString()
         {
             simplify();
             // 2/1 => 2
@@ -181,66 +182,65 @@ namespace Operations_Research
 
     class SimplexMethod
     {
-        //public static Frac dotProduct(Frac[] f1, Frac[] f2)
-        //{
-        //    Frac result = new Frac();
-        //    try
-        //    {
-        //        for (int i = 0; i < f1.Length; i++)
-        //        {
-        //            result += f1[i] * f2[i];
-        //        }
-        //        return result;
-        //    }
-        //    catch (IndexOutOfRangeException e)
-        //    {
-        //        if (f1.Length != f2.Length)
-        //        {
-        //            Console.WriteLine(e.Message);
-        //            Console.WriteLine("Dot product of the vectors with different lengths!");
-        //            throw;
-        //        }
-        //    }
-        //}
-
-        static private int[] obtainBasisIdx(Frac[][] matrix)
+        public static Frac dotProduct(Frac[] f1, Frac[] f2)
         {
-            int[] basis = new int[matrix.Length];
-            for (int i = 0; i < matrix.Length; i++)
+            Frac result = new Frac();
+            try
             {
-                for (int j = 0; j < matrix[i].Length; j++)
+                for (int i = 0; i < f1.Length; i++)
                 {
-                    if (matrix[i][j] == 1)
+                    result += f1[i] * f2[i];
+                }
+                return result;
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                if (f1.Length != f2.Length)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Dot product of the vectors with different lengths!");
+                }
+                return null;
+            }
+        }
+
+        static public int[] obtainBasisIdx(Frac[,] matrix)
+        {
+            int[] basis = new int[matrix.GetLength(0)];
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i,j] == 1)
                     {
                         int k = 0;
-                        while ((k < matrix.Length && matrix[k][j] == 0) || k == i)
-                        {
-                            k++;
-                        }
-
-                        if (k == matrix.Length)
+                        while ((k < matrix.GetLength(0) && matrix[k,j] == 0) || k == i) k++;
+                    
+                        if (k == matrix.GetLength(0))
                             basis[i] = j;
                     }
                 }
             }
+            //Array.Sort(basis);
             return basis;
         }
-        static private Frac[] computeSolution(Frac[][] matrix, Frac[] target)
+
+        static public Frac[] computeSolution(Frac[,] matrix,Frac[] b, Frac[] target)
         {
-            Frac[] solution = new Frac[target.Length];
+            Frac[] solution = new Frac[target.GetLength(0) + 1];
 
             int[] basisIdx = obtainBasisIdx(matrix);
             Frac[] c = Utils.getValues(target, basisIdx);
-            for (int i = 0; i < target.Length - 1; i++)
+            for (int i = 0; i < target.Length; i++)
             {
-                Frac[] a = new Frac[matrix.Length];
-                for (int j = 0; j < matrix.Length; j++)
+                Frac[] a = new Frac[matrix.GetLength(0)];
+                for (int j = 0; j < matrix.GetLength(0); j++)
                 {
-                    a[j] = matrix[j][i];
+                    a[j] = matrix[j,i];
                 }
-                //solution[i] = dotProduct(c, a) - target[i];
+                solution[i] = dotProduct(c, a) - target[i];
             }
-            //solution[target.Length - 1] = dotProduct(c, getValues(matrix, matrix.Length));
+            solution[target.Length] = dotProduct(c, b);
             return solution;
         }
 
@@ -254,54 +254,50 @@ namespace Operations_Research
             return true;
         }
 
-        static private bool checkSolution(Frac[][] simplexTable)
+        static private bool checkSolution(Frac[,] simplexTable)
         {
-            int length = simplexTable[0].Length;
+            int length = simplexTable.GetLength(1);
             for (int i = 0; i < length; i++)
             {
-                if (simplexTable[length - 1][i] < 0)
+                if (simplexTable[length - 1, i] < 0)
                     return false;
             }
             return true;
         }
 
-        static private Frac[][] SimplexForJordan(Frac[][] matrix, Frac[] target)
+        static private Frac[,] SimplexForJordanConvertion(Frac[,] matrix, Frac[] target)
         {
-            Frac[][] result = new Frac[matrix.Length + 1][];
-            int i = 0, j = 0;
-            foreach (Frac[] line in matrix)
+            Frac[,] result = new Frac[matrix.GetLength(0), matrix.GetLength(1)];
+            for (int i = 0; i < matrix.GetLength(0); i++)
             {
-                foreach (Frac frac in line)
+                for (int j = 0; j < matrix.GetLength(1); j++)
                 {
-                    result[i][j] = frac;
-                    j++;
+                    result[i,j] = matrix[i,j];
                 }
-                i++;
             }
-            return result;
+            for (int i = 0; i < matrix.GetLength(1); i++)
+            {
+                result[matrix.GetLength(0), i] = target[i];
+            }
+                return result;
         }
 
-        public static Frac[][] firstStepSimplex(Frac[][] matrix, Frac[] target)
-        {
-            return SimplexForJordan(matrix, computeSolution(matrix, target));
-        }
-        /*
-        public static Frac[] fullsimplex(frac[][] matrix, frac[] target)
+        public static Frac[] fullSimplex(Frac[,] matrix, Frac[] target)
         {
 
         }
-        */
+
     }
 
 
     class Utils
     {
-        static public Frac[] getValues(Frac[][] matrix, int row, int[] idxs)
+        static public Frac[] getValues(Frac[,] matrix, int row, int[] idxs)
         {
             Frac[] result = new Frac[idxs.GetLength(1)];
             for (int i = 0; i < idxs.GetLength(1); i++)
             {
-                result[i] = matrix[row][idxs[i]];
+                result[i] = matrix[row, idxs[i]];
             }
             return result;
         }
@@ -342,16 +338,59 @@ namespace Operations_Research
             {
                 for (int j = 0; j < matrix.GetLength(1); j++)
                 {
-                    Console.Write(matrix[i, j].toString() + "\t");
+                    Console.Write(matrix[i, j].ToString() + "\t");
                 }
                 Console.WriteLine();
             }
         }
 
-        //static void PrintSimplexTable(Frac[][] matrix, Frac[] target)
-        //{
+        public static void PrintSimplexTable(
+            Frac[,] matrix, 
+            Frac[] b, 
+            Frac[] target, 
+            Frac[] basis, 
+            int[] basisIdx, 
+            Frac[] solution=null)
+        {
+            Console.Write("Cb\txb\t");
+            for (int i = 1; i <= matrix.GetLength(1); i++)
+            {
+                Console.Write("x" + i.ToString() + "\t");
+            }
+            Console.WriteLine("  B  ");
 
-        //}
+            for (int i = 0; i < matrix.GetLength(1) + 4; i++) Console.Write("_______");
+            Console.WriteLine();
+
+            Console.Write("  \t  \t");
+            for (int i = 0; i < target.GetLength(0); i++)
+            {
+                Console.Write(target[i].ToString() + "\t");
+            }
+            Console.WriteLine();
+
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                Console.Write(basis[i].ToString() + "\tx" + (basisIdx[i] + 1).ToString() + "\t");
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    Console.Write(matrix[i, j].ToString() + "\t");
+                }
+                Console.WriteLine(b[i].ToString());
+            }
+
+            for (int i = 0; i < matrix.GetLength(1) + 4; i++) Console.Write("_______");
+            Console.WriteLine();
+
+            Console.Write("  \tz \t");
+            if (solution != null)
+            {
+                for (int i = 0; i < solution.GetLength(0); i++)
+                    Console.Write(solution[i].ToString() + "\t");
+                Console.WriteLine();
+            }
+                
+        }
 
     }
 
@@ -359,31 +398,54 @@ namespace Operations_Research
     {
         static void Main(string[] args)
         {
-
+            Frac[] target = new Frac[] { new Frac(2), new Frac(1), new Frac(-1), new Frac(2), new Frac(1) };
+            Frac[] b = new Frac[] { new Frac(6), new Frac(5), new Frac(1) };
             Frac[,] matrix = new Frac[,]
             {
-                {new Frac(0), new Frac(0), new Frac(1),  new Frac(13,34),  new Frac(13,17), new Frac(1)},
-                {new Frac(0), new Frac(1), new Frac(0),   new Frac(3,34), new Frac(20,17), new Frac(1)},
-                {new Frac(1), new Frac(0), new Frac(0),  new Frac(-2,17), new Frac(-4,17), new Frac(1)}
-            };                                         
+                {new Frac(0), new Frac(2), new Frac(0),  new Frac(-3), new Frac(1)},
+                {new Frac(1), new Frac(-1), new Frac(0),  new Frac(4), new Frac(0)},
+                {new Frac(0), new Frac(3), new Frac(1),   new Frac(2), new Frac(0)}
+            };
+            
+            Frac[] solution = SimplexMethod.computeSolution(matrix, b, target);
+            int[] basisIdx = SimplexMethod.obtainBasisIdx(matrix);
+            Frac[] basis = Utils.getValues(target, basisIdx);
+            Utils.PrintSimplexTable(matrix, b, target, basis, basisIdx, solution);
 
-            Utils.PrintMatrix(matrix);
-            while(true)
-            {
-                int row, col;
-                Console.Write("row:");
-                row = int.Parse(Console.ReadLine());
-                Console.Write("col:");
-                col = int.Parse(Console.ReadLine());
-                if (row == -1 || col == -1)
-                {
-                    Console.ReadKey();
-                    return;
-                }
-                matrix = Jordan.oneJordan(matrix, row, col);
-                Console.Write("\n");
-                Utils.PrintMatrix(matrix);
-            }
+            //TODO: Throw this in a function of Jordan
+
+            //Frac[,] matrix = new Frac[,]
+            //{
+            //    {new Frac(4), new Frac(1), new Frac(1),  new Frac(0),  new Frac(1), new Frac(6)},
+            //    {new Frac(-1), new Frac(3), new Frac(-1),   new Frac(0), new Frac(3), new Frac(1)},
+            //    {new Frac(8), new Frac(4), new Frac(12),  new Frac(4), new Frac(12), new Frac(24)}
+            //};                            
+
+            //Utils.PrintMatrix(matrix);
+            //while(true)
+            //{
+            //    int row, col;
+
+            //    Console.Write("row:");
+            //    row = int.Parse(Console.ReadLine());
+            //    if (row == -1)
+            //    {
+            //        Console.ReadKey();
+            //        return;
+            //    }
+
+            //    Console.Write("col:");
+            //    col = int.Parse(Console.ReadLine());
+            //    if (col == -1)
+            //    {
+            //        Console.ReadKey();
+            //        return;
+            //    }
+
+            //    matrix = Jordan.oneJordan(matrix, row, col);
+            //    Console.Write("\n");
+            //    Utils.PrintMatrix(matrix);
+            //}
         }
     }
 }
