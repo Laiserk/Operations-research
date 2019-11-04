@@ -103,9 +103,12 @@ namespace Operations_Research
                 {
                     if (k != -1 && l != -1 && i == k && j == l)
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write(matrix[i, j].ToString() + "\t");
+                        Console.BackgroundColor = ConsoleColor.Gray;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Write(matrix[i, j].ToString());
+                        Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write("\t");
                     }
                     else Console.Write(matrix[i, j].ToString() + "\t");
                 }
@@ -507,11 +510,13 @@ namespace Operations_Research
                 if (!hasLimits(matrix, solution))
                     return null;
                 int[] coords = chooseKeyElem(matrix, b, target, solution);
-                Jordan.JordanForSimplex(matrix, b, solution, coords[0], coords[1]);
                 Console.WriteLine("\nIteration number:" + iterNum.ToString());
                 Utils.PrintSimplexTable(matrix, b, target, solution, coords[0], coords[1]);
+                Jordan.JordanForSimplex(matrix, b, solution, coords[0], coords[1]);
                 iterNum++;
             }
+            Console.WriteLine("\nFinal table: iterations" + iterNum.ToString());
+            Utils.PrintSimplexTable(matrix, b, target, solution);
             return solution[solution.Length - 1];
         }
     }
